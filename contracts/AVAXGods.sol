@@ -53,6 +53,7 @@ contract AVAXGods is ERC1155, Ownable, ERC1155Supply {
     string name; /// @param name battle name; set by player who creates battle
     address[2] players; /// @param players address array representing players in this battle
     uint8[2] moves; /// @param moves uint array representing players' move
+    address previousMove; /// @param previousMove address of players that made the previous move 
     address winner; /// @param winner winner address
   }
 
@@ -125,7 +126,7 @@ contract AVAXGods is ERC1155, Ownable, ERC1155Supply {
   event NewPlayer(address indexed owner, string name);
   event NewBattle(string battleName, address indexed player1, address indexed player2);
   event BattleEnded(string battleName, address indexed winner, address indexed loser);
-  event BattleMove(string indexed battleName, bool indexed isFirstMove);
+  event BattleMove(string indexed battleName, address indexed player, bool indexed isFirstMove);
   event NewGameToken(address indexed owner, uint256 id, uint256 attackStrength, uint256 defenseStrength);
   event RoundEnded(address[2] damagedPlayers);
 
@@ -143,7 +144,7 @@ contract AVAXGods is ERC1155, Ownable, ERC1155Supply {
   function initialize() private {
     gameTokens.push(GameToken("", 0, 0, 0));
     players.push(Player(address(0), "", 0, 0, false));
-    battles.push(Battle(BattleStatus.PENDING, bytes32(0), "", [address(0), address(0)], [0, 0], address(0)));
+    battles.push(Battle(BattleStatus.PENDING, bytes32(0), "", [address(0), address(0)], [0, 0], address(0), address(0)));
   }
 
   /// @dev Registers a player
@@ -228,6 +229,7 @@ contract AVAXGods is ERC1155, Ownable, ERC1155Supply {
       _name, // Battle name
       [msg.sender, address(0)], // player addresses; player 2 empty until they joins battle
       [0, 0], // moves for each player
+      address(0),
       address(0) // winner address; empty until battle ends
     );
 
@@ -297,7 +299,9 @@ contract AVAXGods is ERC1155, Ownable, ERC1155Supply {
 
     _battle = getBattle(_battleName);
     uint _movesLeft = 2 - (_battle.moves[0] == 0 ? 0 : 1) - (_battle.moves[1] == 0 ? 0 : 1);
-    emit BattleMove(_battleName, _movesLeft == 1 ? true : false);
+    battles[battleInfo[_battleName]].previousMove = msg.sender;
+
+    emit BattleMove(_battleName, msg.sender, _movesLeft == 1 ? true : false);
     
     if(_movesLeft == 0) {
       _awaitBattleResults(_battleName);
