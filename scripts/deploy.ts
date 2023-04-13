@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import console from "console";
 
 const _metadataUri =
-  "https://gateway.pinata.cloud/ipfs/https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi";
+  "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi";
 
 async function deploy(name: string, ...params: [string]) {
   const contractFactory = await ethers.getContractFactory(name);

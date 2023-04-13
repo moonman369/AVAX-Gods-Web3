@@ -28,6 +28,7 @@ export default {
       gasPrice: 225000000000,
       chainId: 43113,
       accounts: [process.env.PRIVATE_KEY],
+      saveDeployments: true,
     },
     // subnet: {
     //   url: process.env.NODE_URL,
